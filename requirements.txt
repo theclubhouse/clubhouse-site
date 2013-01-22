@@ -1,0 +1,15 @@
+DateUtils==0.5.2
+Jinja2==2.6
+Markdown==2.2.1
+Pygments==1.5
+Unidecode==0.04.10
+blinker==1.2
+docutils==0.10
+feedgenerator==1.2.1
+git-remote-helpers==0.1.0
+icalendar==3.2
+pelican==3.1.1
+python-dateutil==2.1
+pytz==2012h
+six==1.2.0
+wsgiref==0.1.2

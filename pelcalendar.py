@@ -26,13 +26,18 @@ def generate_calendar(generator):
 
     calendar = OrderedDict()
 
+    featured_event = None
     for month, events in events_by_month(events):
         calendar[month] = events
         for event in events:
             event.end_date = get_date(event.end_date)
 
+            if not featured_event and event.metadata.has_key('featured'):
+                featured_event = event
+
     generator.calendar = calendar
-    generator.featured_event = calendar.values()[0][0]
+    generator.featured_event = featured_event or calendar.values()[0][0]
+    import code; code.interact(local=locals())
     generator._update_context(('calendar','featured_event'))
 
 def register():
