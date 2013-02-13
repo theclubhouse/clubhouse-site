@@ -40,17 +40,12 @@ def parse_description(body):
     metadata = {}
 
     for line in body.splitlines():
-#        line = re.sub('([a-zA-Z.+-]+@[a-zA-Z.+-]+).?', '<a href="mailto:\\1">\\1</a><br/>', line)
-#        line = re.sub('([a-zA-Z.+-]+@[a-zA-Z.+-]+).?', 'mailto:\\1<br/>', line)
         match = re.match('([^:]+): (.*)', line)
         key, value = match and match.groups() or (None, None)
 
         if key and key.upper() in Translations.keys():
             metadata[Translations[key.upper()]] = value
         else:
-#            if "<" not in line and ">" not in line:
-#            line = urlize(line, trim_url_limit=32)
-            #line = re.sub('(http(s?):[^ ]+)', '<a href="\\1">\\1</a>', line)
             output += line + "\n"
 
     return format_description(output), metadata
