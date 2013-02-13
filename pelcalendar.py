@@ -1,4 +1,4 @@
-import code
+import re
 from collections import OrderedDict
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -37,8 +37,11 @@ def generate_calendar(generator):
 
     generator.calendar = calendar
     generator.featured_event = featured_event or calendar.values()[0][0]
-    import code; code.interact(local=locals())
     generator._update_context(('calendar','featured_event'))
 
 def register():
     signals.article_generator_finalized.connect(generate_calendar)
+
+
+def emailize(text):
+    return re.sub('([a-zA-Z.+-]+@[a-zA-Z.+-]+)', '<a href="mailto:\\1">\\1</a><br/>', text)

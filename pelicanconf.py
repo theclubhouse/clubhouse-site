@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- #
 
+import pelcalendar
+
 AUTHOR = u"theClubhou.se"
 SITENAME = u"theClubhou.se"
 SITEURL = 'http://theclubhou.se'
@@ -8,6 +10,7 @@ SITEURL = 'http://theclubhou.se'
 TIMEZONE = 'America/New_York'
 THEME = 'themes/theclubhouse'
 JINJA_EXTENSIONS = ['jinja2.ext.with_']
+JINJA_FILTERS = {'emailify': pelcalendar.emailize}
 
 DEFAULT_LANG = 'en'
 

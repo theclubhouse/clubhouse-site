@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 import re, codecs
+import datetime
 import dateutil.rrule
 from dateutil.rrule import *
 from icalendar import Calendar
 import pytz
+from jinja2.utils import urlize
 
 Translations = {
     'MAX CLASS SIZE': 'Class_Size',
@@ -38,17 +40,27 @@ def parse_description(body):
     metadata = {}
 
     for line in body.splitlines():
-        line = re.sub('([a-zA-Z.+-]+@[a-zA-Z.+-]+).?', '<a href="mailto:\\1">\\1</a><br/>', line)
+#        line = re.sub('([a-zA-Z.+-]+@[a-zA-Z.+-]+).?', '<a href="mailto:\\1">\\1</a><br/>', line)
+#        line = re.sub('([a-zA-Z.+-]+@[a-zA-Z.+-]+).?', 'mailto:\\1<br/>', line)
         match = re.match('([^:]+): (.*)', line)
         key, value = match and match.groups() or (None, None)
 
         if key and key.upper() in Translations.keys():
             metadata[Translations[key.upper()]] = value
         else:
-            line = re.sub('(http(s?):[^ ]+)', '<a href="\\1">\\1</a>', line)
+#            if "<" not in line and ">" not in line:
+#            line = urlize(line, trim_url_limit=32)
+            #line = re.sub('(http(s?):[^ ]+)', '<a href="\\1">\\1</a>', line)
             output += line + "\n"
 
     return format_description(output), metadata
+
+
+def normalize_date(date, tzinfo=None):
+    if type(date) is datetime.date:   # icalendar returns datetime.date for all-day events
+        date = datetime.datetime.combine(date, datetime.time())
+        return date.replace(tzinfo=tz)
+    return date.astimezone(tzinfo)
 
 if __name__ == '__main__':
     gcal = read_calendar('./clubhouse.ics')
@@ -57,7 +69,8 @@ if __name__ == '__main__':
 
     for e in events:
         title = e['summary']
-        date = e['dtstart'].dt.astimezone(tz)
+        date = normalize_date(e['dtstart'].dt, tzinfo=tz)
+        date = date.astimezone(tz)
         dates = [date]
 
         if e.has_key('RRULE'):
@@ -88,7 +101,7 @@ if __name__ == '__main__':
             with codecs.open(u'content/events/%s.md' % filename, 'w', encoding='utf-8') as f:
                 print >>f, 'Title: ' + e['summary']
                 print >>f, 'Date: ' + date.strftime("%F %T")
-                print >>f, 'End_Date: ' + e['dtend'].dt.astimezone(tz).strftime("%F %T")
+                print >>f, 'End_Date: ' + normalize_date(e['dtend'].dt, tzinfo=tz).strftime("%F %T")
 
                 body, metadata = parse_description(e['description'])
 
@@ -97,6 +110,5 @@ if __name__ == '__main__':
 
                 print >>f, ''
                 print >>f, body
-
 
 
